@@ -31,22 +31,10 @@ try:
 except Error as e:
     print(f"Error: {e}")
 
-finally:
-    # Close the database connection
-    if db.is_connected():
-        cursor.close()
-        db.close()
-        print("Connection closed")
-
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
-
-
-"""
-select * from users where username = 'admin' and password = 'admin'
-"""
 
 
 @app.post("/login", response_class=HTMLResponse)

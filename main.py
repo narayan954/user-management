@@ -16,6 +16,28 @@ db = mysql.connector.connect(
 )
 cursor = db.cursor()
 
+# Create a 'users' table
+try:
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(255) NOT NULL,
+        password VARCHAR(255) NOT NULL
+    )
+    """
+    cursor.execute(create_table_query)
+    print("Table 'users' created successfully")
+
+except Error as e:
+    print(f"Error: {e}")
+
+finally:
+    # Close the database connection
+    if db.is_connected():
+        cursor.close()
+        db.close()
+        print("Connection closed")
+
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
@@ -30,10 +52,19 @@ select * from users where username = 'admin' and password = 'admin'
 @app.post("/login", response_class=HTMLResponse)
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
     # Check username and password (implement your authentication logic)
-    # If authenticated, render the page for adding a new user
-    return templates.TemplateResponse(
-        "add_user.html", {"request": request, "username": username}
+    cursor.execute(
+        "select * from users where username = %s and password = %s",
+        (username, password),
     )
+    user = cursor.fetchone()
+
+    # If authenticated, render the page for adding a new user
+    if user:
+        return templates.TemplateResponse(
+            "add_user.html", {"request": request, "username": username}
+        )
+    else:
+        return {"message": "Invalid Credentials"}
 
 
 @app.post("/add_user", response_class=HTMLResponse)

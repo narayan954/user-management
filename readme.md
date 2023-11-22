@@ -43,16 +43,16 @@ Before running the project, ensure you have the following installed:
    ```
 
 5. Configure MySQL:
+   
+   Create a MySQL database and update the connection details in main.py:
 
-Create a MySQL database and update the connection details in main.py:
+   ```python
+    host="your_mysql_host",
+    user="your_mysql_user",
+    password="your_mysql_password",
+    database="your_database_name"
+    ```
 
-```python
-host="your_mysql_host",
-user="your_mysql_user",
-password="your_mysql_password",
-database="your_database_name"
-
-```
 6. Run the application to create the 'users' table in the database.
     
     ```bash
@@ -73,8 +73,7 @@ database="your_database_name"
     Stop the application and comment out the lines again.
 
 8. Run the application again and visit  http://127.0.0.1:8000 in your browser to access the login page.
-
-Use the provided login credentials or add new users through the application.
+   Use the provided login credentials or add new users through the application.
 
 9. Test Credential Example:
 

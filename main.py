@@ -2,6 +2,9 @@ from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 import mysql.connector
+from mysql.connector import Error
+import bcrypt  # Import bcrypt for password hashing
+from pydantic import BaseModel, Field  # Import BaseModel for validating request body
 
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
@@ -14,7 +17,7 @@ db = mysql.connector.connect(
     password="admin",
     database="test",
 )
-cursor = db.cursor()
+cursor = db.cursor(buffered=True)
 
 # Create a 'users' table
 try:
@@ -59,8 +62,16 @@ async def login(request: Request, username: str = Form(...), password: str = For
 async def add_user(
     request: Request, new_username: str = Form(...), new_password: str = Form(...)
 ):
-    # Add a new user to the database (implement your logic)
-    return {"message": "User added successfully!"}
+    # Try adding a new user to the database
+    try:
+        cursor.execute(
+            "insert into users (username, password) values (%s, %s)",
+            (new_username, new_password),
+        )
+        db.commit()
+        return {"message": "User added successfully!"}
+    except Exception as e:
+        return {"message": f"Error: {e}"}
 
 
 if __name__ == "__main__":

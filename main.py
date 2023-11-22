@@ -55,7 +55,14 @@ async def login(request: Request, username: str = Form(...), password: str = For
             "add_user.html", {"request": request, "username": username}
         )
     else:
-        return {"message": "Invalid Credentials"}
+        return templates.TemplateResponse(
+            "error.html", {"request": request, "message": "Invalid credentials!"}
+        )
+
+
+@app.get("/add_user", response_class=HTMLResponse)
+async def add_user_page(request: Request):
+    return templates.TemplateResponse("add_user.html", {"request": request})
 
 
 @app.post("/add_user", response_class=HTMLResponse)
@@ -69,9 +76,13 @@ async def add_user(
             (new_username, new_password),
         )
         db.commit()
-        return {"message": "User added successfully!"}
+        return templates.TemplateResponse(
+            "success.html", {"request": request, "message": "User added successfully!"}
+        )
     except Exception as e:
-        return {"message": f"Error: {e}"}
+        return templates.TemplateResponse(
+            "error.html", {"request": request, "message": f"Error: {e}"}
+        )
 
 
 if __name__ == "__main__":
